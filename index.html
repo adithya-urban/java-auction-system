@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Auction System - Visual Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent: #10b981;
+      --accent-danger: #ef4444;
+      --accent-warn: #f59e0b;
+      --badge-bg: #0369a1;
+      --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: #111827;
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+      font-size: 1.2rem;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .user-switcher {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+    }
+
+    select.user-select {
+      background: transparent;
+      color: var(--text);
+      border: none;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    select.user-select option {
+      background-color: #1e293b;
+      color: #fff;
+    }
+
+    .wallet-chip {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent);
+      padding: 0.35rem 0.8rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-deposit {
+      background: #334155;
+      color: #f8fafc;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-deposit:hover {
+      background: #475569;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2rem;
+    }
+
+    /* Navigation Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.75rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: #1e293b;
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      border: 1px solid var(--card-border);
+    }
+
+    .tab-badge {
+      background: #0284c7;
+      color: white;
+      font-size: 0.7rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 9999px;
+    }
+
+    /* Search & Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 1.25rem;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .stat-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Search Bar */
+    .search-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+    }
+
+    /* Grid of Auctions */
+    .auction-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .auction-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .auction-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .item-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .item-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-active {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .badge-sold {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--primary);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .badge-unsold {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--accent-danger);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .item-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .price-details {
+      background: #111827;
+      padding: 0.85rem;
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .price-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .price-amount {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .timer-box {
+      text-align: right;
+    }
+
+    .timer-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #f59e0b;
+    }
+
+    .seller-tag {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .bid-action-bar {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .bid-input {
+      flex: 1;
+      background: #111827;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .bid-input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #0f172a;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    /* Modal / Form Styles */
+    .create-form-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      background: #111827;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    /* Bid History Table */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background: #111827;
+      padding: 1rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      font-size: 0.9rem;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 100;
+      font-size: 0.9rem;
+      max-width: 350px;
+    }
+
+    #toast.success {
+      border-left: 4px solid var(--accent);
+    }
+
+    #toast.error {
+      border-left: 4px solid var(--accent-danger);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🔨</div>
+      <div>
+        <div class="brand-title">Java Auction Platform</div>
+        <div class="brand-subtitle">Interactive Architecture Simulation UI</div>
+      </div>
+    </div>
+
+    <div class="user-profile">
+      <div class="user-switcher">
+        <span>Logged in as:</span>
+        <select id="userSelect" class="user-select" onchange="switchUser(this.value)">
+          <option value="alice">Alice (Seller & Bidder)</option>
+          <option value="bob">Bob (Seller & Bidder)</option>
+          <option value="charlie">Charlie (New User)</option>
+        </select>
+      </div>
+
+      <div class="wallet-chip">
+        <span>💰</span>
+        <span id="walletBalance">$1000.00</span>
+        <button class="btn-deposit" onclick="promptDeposit()">+ Deposit</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Stats Overview -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <span class="stat-title">Active Auctions</span>
+        <span class="stat-value" id="statActive">2</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">Total Bids Placed</span>
+        <span class="stat-value" id="statBids">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">Items Sold</span>
+        <span class="stat-value" id="statSold">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">System Status</span>
+        <span class="stat-value" style="color: var(--accent); font-size: 1.25rem;">ONLINE (In-Memory)</span>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="setTab('browse')">
+        <span>Browse Active</span>
+        <span class="tab-badge" id="browseBadge">2</span>
+      </button>
+      <button class="tab-btn" onclick="setTab('create')">
+        <span>+ Create Listing</span>
+      </button>
+      <button class="tab-btn" onclick="setTab('my-auctions')">
+        <span>My Listings</span>
+      </button>
+      <button class="tab-btn" onclick="setTab('won')">
+        <span>Won Items</span>
+      </button>
+      <button class="tab-btn" onclick="setTab('history')">
+        <span>Global Bid Ledger</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: BROWSE AUCTIONS -->
+    <section id="tab-browse">
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by title or description..." oninput="renderAuctions()">
+      </div>
+      <div class="auction-grid" id="auctionGrid">
+        <!-- Auction Cards injected here -->
+      </div>
+    </section>
+
+    <!-- TAB 2: CREATE LISTING -->
+    <section id="tab-create" style="display: none;">
+      <div class="create-form-container">
+        <h2 style="margin-bottom: 1.5rem; font-size: 1.4rem;">List an Item for Auction</h2>
+        <div class="form-group">
+          <label class="form-label">Item Title</label>
+          <input type="text" id="itemTitle" class="form-control" placeholder="e.g. Sony Mirrorless Camera">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="itemDesc" class="form-control" rows="3" placeholder="Condition, specifications, includes..."></textarea>
+        </div>
+        <div class="form-group" style="display: flex; gap: 1rem;">
+          <div style="flex: 1;">
+            <label class="form-label">Starting Price ($)</label>
+            <input type="number" id="itemPrice" class="form-control" placeholder="100.00" min="1" step="0.5">
+          </div>
+          <div style="flex: 1;">
+            <label class="form-label">Duration (Minutes)</label>
+            <input type="number" id="itemDuration" class="form-control" placeholder="15" min="1" value="15">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width: 100%; padding: 0.85rem;" onclick="createAuction()">Publish Auction Listing</button>
+      </div>
+    </section>
+
+    <!-- TAB 3: MY LISTINGS -->
+    <section id="tab-my-auctions" style="display: none;">
+      <h2 style="margin-bottom: 1.25rem; font-size: 1.3rem;">Items Listed by You</h2>
+      <div class="auction-grid" id="myAuctionGrid">
+        <!-- My items injected here -->
+      </div>
+    </section>
+
+    <!-- TAB 4: WON ITEMS -->
+    <section id="tab-won" style="display: none;">
+      <h2 style="margin-bottom: 1.25rem; font-size: 1.3rem;">Auctions You Have Won</h2>
+      <div class="auction-grid" id="wonAuctionGrid">
+        <!-- Won items injected here -->
+      </div>
+    </section>
+
+    <!-- TAB 5: BID LEDGER -->
+    <section id="tab-history" style="display: none;">
+      <h2 style="margin-bottom: 1.25rem; font-size: 1.3rem;">Live Bid History Ledger</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Auction Item</th>
+              <th>Bidder</th>
+              <th>Amount ($)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="bidHistoryTable">
+            <!-- Table rows injected here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toast"></div>
+
+  <script>
+    // System Data Models (Identical logic to Java Backend)
+    const users = {
+      alice: { id: "u-1", name: "Alice", email: "alice@email.com", balance: 1000.0 },
+      bob: { id: "u-2", name: "Bob", email: "bob@email.com", balance: 1000.0 },
+      charlie: { id: "u-3", name: "Charlie", email: "charlie@email.com", balance: 1000.0 }
+    };
+
+    let currentUserKey = "alice";
+
+    // Initial Seed Auctions (Same as Java AuctionApp.java demo data)
+    let auctions = [
+      {
+        id: "item-101",
+        sellerKey: "alice",
+        sellerName: "Alice",
+        title: "Vintage Watch",
+        desc: "A beautiful vintage mechanical timepiece from the 1960s with leather strap.",
+        startPrice: 100.0,
+        currentBid: 100.0,
+        highestBidderKey: null,
+        highestBidderName: null,
+        endTime: Date.now() + 30 * 60 * 1000, // 30 mins
+        status: "ACTIVE" // ACTIVE, SOLD, UNSOLD
+      },
+      {
+        id: "item-102",
+        sellerKey: "bob",
+        sellerName: "Bob",
+        title: "Gaming Laptop",
+        desc: "High-performance gaming laptop with RTX 4070, 32GB RAM, and 1TB SSD.",
+        startPrice: 500.0,
+        currentBid: 500.0,
+        highestBidderKey: null,
+        highestBidderName: null,
+        endTime: Date.now() + 45 * 60 * 1000, // 45 mins
+        status: "ACTIVE"
+      }
+    ];
+
+    let bidLedger = [];
+
+    // Switch current user simulation
+    function switchUser(userKey) {
+      currentUserKey = userKey;
+      updateHeader();
+      renderAuctions();
+      renderMyAuctions();
+      renderWonAuctions();
+      showToast(`Switched active user to ${users[userKey].name}`, "success");
+    }
+
+    function updateHeader() {
+      const user = users[currentUserKey];
+      document.getElementById("walletBalance").innerText = `$${user.balance.toFixed(2)}`;
+    }
+
+    function promptDeposit() {
+      const amtStr = prompt("Enter deposit amount ($):", "250");
+      if (amtStr === null) return;
+      const amount = parseFloat(amtStr);
+      if (isNaN(amount) || amount <= 0) {
+        showToast("Invalid deposit amount.", "error");
+        return;
+      }
+      users[currentUserKey].balance += amount;
+      updateHeader();
+      showToast(`Deposited $${amount.toFixed(2)} to ${users[currentUserKey].name}'s wallet!`, "success");
+    }
+
+    // Tab Navigation
+    function setTab(tabName) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      event.currentTarget.classList.add("active");
+
+      document.getElementById("tab-browse").style.display = tabName === "browse" ? "block" : "none";
+      document.getElementById("tab-create").style.display = tabName === "create" ? "block" : "none";
+      document.getElementById("tab-my-auctions").style.display = tabName === "my-auctions" ? "block" : "none";
+      document.getElementById("tab-won").style.display = tabName === "won" ? "block" : "none";
+      document.getElementById("tab-history").style.display = tabName === "history" ? "block" : "none";
+
+      if (tabName === "my-auctions") renderMyAuctions();
+      if (tabName === "won") renderWonAuctions();
+      if (tabName === "history") renderBidHistory();
+    }
+
+    // Auto-Expire Auctions (Periodic Check, just like Java's checkAndCloseExpiredAuctions)
+    function checkExpirations() {
+      const now = Date.now();
+      let changed = false;
+
+      auctions.forEach(item => {
+        if (item.status === "ACTIVE" && now >= item.endTime) {
+          if (item.highestBidderKey) {
+            item.status = "SOLD";
+            // Deduct from winner, credit to seller
+            users[item.highestBidderKey].balance -= item.currentBid;
+            users[item.sellerKey].balance += item.currentBid;
+            showToast(`Auction Ended! "${item.title}" SOLD to ${users[item.highestBidderKey].name} for $${item.currentBid.toFixed(2)}`, "success");
+          } else {
+            item.status = "UNSOLD";
+            showToast(`Auction Ended! "${item.title}" closed UNSOLD (no bids).`, "error");
+          }
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        updateHeader();
+        updateStats();
+        renderAuctions();
+        renderMyAuctions();
+        renderWonAuctions();
+      }
+    }
+
+    setInterval(checkExpirations, 1000);
+
+    // Format Countdown Time
+    function formatTimeRemaining(ms) {
+      if (ms <= 0) return "EXPIRED";
+      const totalSec = Math.floor(ms / 1000);
+      const m = Math.floor(totalSec / 60);
+      const s = totalSec % 60;
+      return `${m}m ${s < 10 ? '0' : ''}${s}s`;
+    }
+
+    // Render Browse Auctions
+    function renderAuctions() {
+      const container = document.getElementById("auctionGrid");
+      const filter = document.getElementById("searchInput").value.toLowerCase();
+      const activeList = auctions.filter(a =>
+        a.status === "ACTIVE" &&
+        (a.title.toLowerCase().includes(filter) || a.desc.toLowerCase().includes(filter))
+      );
+
+      document.getElementById("browseBadge").innerText = activeList.length;
+
+      if (activeList.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <p>No active auctions found matching your search.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = activeList.map(item => {
+        const remaining = item.endTime - Date.now();
+        const minNextBid = (item.highestBidderKey ? item.currentBid + 10 : item.startPrice);
+        const isMyItem = item.sellerKey === currentUserKey;
+
+        return `
+          <div class="auction-card">
+            <div class="card-top">
+              <span class="item-title">${item.title}</span>
+              <span class="item-badge badge-active">ACTIVE</span>
+            </div>
+            <p class="item-desc">${item.desc}</p>
+            <div class="seller-tag">Seller: <strong>${item.sellerName}</strong> ${isMyItem ? "(You)" : ""}</div>
+
+            <div class="price-details">
+              <div class="price-box">
+                <span class="price-label">${item.highestBidderKey ? "Current Highest Bid" : "Starting Price"}</span>
+                <span class="price-amount">$${item.currentBid.toFixed(2)}</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">
+                  ${item.highestBidderName ? `Top bidder: ${item.highestBidderName}` : "No bids placed yet"}
+                </span>
+              </div>
+              <div class="timer-box">
+                <span class="price-label">Time Left</span>
+                <div class="timer-text" id="timer-${item.id}">${formatTimeRemaining(remaining)}</div>
+              </div>
+            </div>
+
+            <div class="bid-action-bar">
+              <input type="number" id="bid-input-${item.id}" class="bid-input"
+                placeholder="Min $${minNextBid.toFixed(2)}"
+                ${isMyItem ? 'disabled value="Own Listing"' : ''}
+              />
+              <button class="btn btn-primary"
+                ${isMyItem ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : `onclick="handleBid('${item.id}')"`}>
+                Place Bid
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Place Bid Action with Java-matching validations
+    function handleBid(itemId) {
+      const item = auctions.find(a => a.id === itemId);
+      if (!item) return;
+
+      const inputEl = document.getElementById(`bid-input-${itemId}`);
+      const bidAmount = parseFloat(inputEl.value);
+
+      // Validation 1: User cannot bid on own item
+      if (item.sellerKey === currentUserKey) {
+        showToast("Error: You cannot bid on your own auction!", "error");
+        return;
+      }
+
+      // Validation 2: Amount is valid number
+      if (isNaN(bidAmount) || bidAmount <= 0) {
+        showToast("Error: Please enter a valid bid amount.", "error");
+        return;
+      }
+
+      // Validation 3: Higher than current highest bid
+      const minRequired = item.highestBidderKey ? item.currentBid : item.startPrice;
+      if (bidAmount <= minRequired) {
+        showToast(`Error: Bid must be strictly greater than $${minRequired.toFixed(2)}!`, "error");
+        return;
+      }
+
+      // Validation 4: User balance check
+      if (users[currentUserKey].balance < bidAmount) {
+        showToast(`Error: Insufficient balance! You have $${users[currentUserKey].balance.toFixed(2)} but bid is $${bidAmount.toFixed(2)}.`, "error");
+        return;
+      }
+
+      // Record Bid
+      item.currentBid = bidAmount;
+      item.highestBidderKey = currentUserKey;
+      item.highestBidderName = users[currentUserKey].name;
+
+      bidLedger.unshift({
+        time: new Date().toLocaleTimeString(),
+        itemTitle: item.title,
+        bidder: users[currentUserKey].name,
+        amount: bidAmount,
+        status: "Accepted"
+      });
+
+      updateStats();
+      renderAuctions();
+      showToast(`Success! You placed a $${bidAmount.toFixed(2)} bid on "${item.title}"!`, "success");
+    }
+
+    // Create New Auction
+    function createAuction() {
+      const title = document.getElementById("itemTitle").value.trim();
+      const desc = document.getElementById("itemDesc").value.trim();
+      const price = parseFloat(document.getElementById("itemPrice").value);
+      const duration = parseInt(document.getElementById("itemDuration").value);
+
+      if (!title || !desc || isNaN(price) || price <= 0 || isNaN(duration) || duration <= 0) {
+        showToast("Error: Please fill in all fields with valid values.", "error");
+        return;
+      }
+
+      const newAuction = {
+        id: "item-" + (100 + auctions.length + 1),
+        sellerKey: currentUserKey,
+        sellerName: users[currentUserKey].name,
+        title: title,
+        desc: desc,
+        startPrice: price,
+        currentBid: price,
+        highestBidderKey: null,
+        highestBidderName: null,
+        endTime: Date.now() + duration * 60 * 1000,
+        status: "ACTIVE"
+      };
+
+      auctions.unshift(newAuction);
+
+      // Reset form
+      document.getElementById("itemTitle").value = "";
+      document.getElementById("itemDesc").value = "";
+      document.getElementById("itemPrice").value = "";
+
+      updateStats();
+      renderAuctions();
+      showToast(`Auction "${title}" listed successfully!`, "success");
+
+      // Go back to browse tab
+      document.querySelectorAll(".tab-btn")[0].click();
+    }
+
+    // Render My Auctions
+    function renderMyAuctions() {
+      const container = document.getElementById("myAuctionGrid");
+      const myList = auctions.filter(a => a.sellerKey === currentUserKey);
+
+      if (myList.length === 0) {
+        container.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><p>You haven't listed any auctions yet.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = myList.map(item => `
+        <div class="auction-card">
+          <div class="card-top">
+            <span class="item-title">${item.title}</span>
+            <span class="item-badge ${item.status === 'ACTIVE' ? 'badge-active' : item.status === 'SOLD' ? 'badge-sold' : 'badge-unsold'}">
+              ${item.status}
+            </span>
+          </div>
+          <p class="item-desc">${item.desc}</p>
+          <div class="price-details">
+            <div class="price-box">
+              <span class="price-label">Highest Bid</span>
+              <span class="price-amount">$${item.currentBid.toFixed(2)}</span>
+            </div>
+            <div class="timer-box">
+              <span class="price-label">Top Bidder</span>
+              <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">
+                ${item.highestBidderName || "None"}
+              </span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render Won Auctions
+    function renderWonAuctions() {
+      const container = document.getElementById("wonAuctionGrid");
+      const wonList = auctions.filter(a => a.status === "SOLD" && a.highestBidderKey === currentUserKey);
+
+      if (wonList.length === 0) {
+        container.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><p>You haven't won any auctions yet. Bid and wait for auction completion!</p></div>`;
+        return;
+      }
+
+      container.innerHTML = wonList.map(item => `
+        <div class="auction-card">
+          <div class="card-top">
+            <span class="item-title">${item.title}</span>
+            <span class="item-badge badge-sold">WON</span>
+          </div>
+          <p class="item-desc">${item.desc}</p>
+          <div class="price-details">
+            <div class="price-box">
+              <span class="price-label">Winning Price</span>
+              <span class="price-amount">$${item.currentBid.toFixed(2)}</span>
+            </div>
+            <div class="timer-box">
+              <span class="price-label">Seller</span>
+              <span style="font-weight: 600; color: #fff;">${item.sellerName}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render Bid History Table
+    function renderBidHistory() {
+      const tbody = document.getElementById("bidHistoryTable");
+      if (bidLedger.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No bids placed yet in this session.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = bidLedger.map(b => `
+        <tr>
+          <td style="color: var(--text-muted);">${b.time}</td>
+          <td style="font-weight: 600;">${b.itemTitle}</td>
+          <td>${b.bidder}</td>
+          <td style="color: var(--primary); font-weight: 700;">$${b.amount.toFixed(2)}</td>
+          <td><span class="item-badge badge-active">${b.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    // Update Stats Numbers
+    function updateStats() {
+      document.getElementById("statActive").innerText = auctions.filter(a => a.status === "ACTIVE").length;
+      document.getElementById("statBids").innerText = bidLedger.length;
+      document.getElementById("statSold").innerText = auctions.filter(a => a.status === "SOLD").length;
+    }
+
+    // Toast Popups
+    function showToast(message, type = "success") {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.className = type;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3500);
+    }
+
+    // Initialize UI on load
+    updateHeader();
+    updateStats();
+    renderAuctions();
+
+    // Timer updater loop every second for smooth countdown
+    setInterval(() => {
+      auctions.forEach(item => {
+        if (item.status === "ACTIVE") {
+          const el = document.getElementById(`timer-${item.id}`);
+          if (el) {
+            el.innerText = formatTimeRemaining(item.endTime - Date.now());
+          }
+        }
+      });
+    }, 1000);
+  </script>
+</body>
+</html>
+
